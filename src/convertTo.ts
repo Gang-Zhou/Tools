@@ -80,7 +80,10 @@ function execute(): void {
 
             return textureAtlases;
         });
-
+        if(type == "v45" && textureAtlasFiles == null){
+            console.log("not convert:", file)
+            continue
+        }
         if (!dragonBonesData) {
             continue;
         }
@@ -128,7 +131,7 @@ function execute(): void {
                     fs.mkdirsSync(outputDirURL);
                 }
 
-                fs.writeFileSync(outputURL, new Buffer(result));
+                fs.writeFileSync(outputURL, Buffer.from(result));
                 console.log(outputURL);
 
                 if (deleteRaw) {
@@ -172,21 +175,24 @@ function execute(): void {
 
                 break;
             }
-
-            case "new": {
+            case "new":
                 toNew(dragonBonesData, false);
+            case "v45": {
                 format(dragonBonesData);
                 object.compress(dragonBonesData, dbft.compressConfig);
 
                 const outputDirURL = dirURL.replace(input, output);
-                const outputURL = path.join(outputDirURL, fileName + ".json");
+                let outputURL = path.join(outputDirURL, fileName + ".json");
                 const result = JSON.stringify(dragonBonesData);
-
+                if( type == "v45" && outputDirURL == dirURL    //在相同目录输出添加45后缀避免覆盖
+                    && outputURL.match(/45.json$/i) == null){
+                    outputURL = outputURL.replace(/.json$/i, "45.json")
+                }
                 if (!fs.existsSync(outputDirURL)) {
                     fs.mkdirsSync(outputDirURL);
                 }
 
-                fs.writeFileSync(outputURL, new Buffer(result));
+                fs.writeFileSync(outputURL, Buffer.from(result));
                 console.log(outputURL);
 
                 if (outputDirURL !== dirURL) {
@@ -239,7 +245,7 @@ function execute(): void {
                 const outputDirURL = dirURL.replace(input, output);
                 const outputURL = path.join(outputDirURL, fileName + ".html");
                 const result = toWeb({
-                    data: new Buffer(toBinary(dragonBonesData)),
+                    data: Buffer.from(toBinary(dragonBonesData)),
                     textureAtlases: textureAtlasImages.map((v) => {
                         const imagePath = path.join(dirURL, v);
                         if (fs.existsSync(imagePath)) {
@@ -258,7 +264,7 @@ function execute(): void {
                     fs.mkdirsSync(outputDirURL);
                 }
 
-                fs.writeFileSync(outputURL, new Buffer(result));
+                fs.writeFileSync(outputURL, Buffer.from(result));
                 console.log(outputURL);
 
                 if (deleteRaw) {

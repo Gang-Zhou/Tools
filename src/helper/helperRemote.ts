@@ -2,6 +2,7 @@ import * as fs from "fs-extra";
 import * as http from "http";
 import * as nodeUtils from "../common/nodeUtils";
 import { Code, Gate } from "../common/server";
+import {AddressInfo} from "net";
 
 type Input = {
     id?: number;
@@ -80,7 +81,9 @@ export function start(): void {
 
     const portServer = http.createServer();
     portServer.listen(0, () => {
-        const port = portServer.address().port;
+
+        let port  = ( <AddressInfo> portServer.address())!.port;
+        // const { port } = portServer.address() as AddressInfo
         portServer.close();
         gate.start("dragonbones", port, "/dragonbones_helper");
         nodeUtils.open(`http://${nodeUtils.findIP()}:${port}/dragonbones_helper/resource/helper.html`);

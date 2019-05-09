@@ -11,6 +11,7 @@ import toBinary from "./action/toBinary";
 import toWeb from "./action/toWeb";
 // import toSpine from "./action/toSpine";
 import format from "./action/formatFormat";
+import {AddressInfo} from "net";
 
 type Input = {
     from: "spine" | "cocos";
@@ -248,7 +249,7 @@ function execute(): void {
 
     const portServer = http.createServer();
     portServer.listen(0, () => {
-        const port = portServer.address().port;
+        const port = (<AddressInfo> portServer.address()!).port;
         portServer.close();
         gate.start("dragonbones", port, "/dragonbones");
         console.log(`http://${nodeUtils.findIP()}:${port}/dragonbones`);
