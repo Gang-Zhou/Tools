@@ -16,7 +16,8 @@
     "url": "https://github.com/DragonBones/Tools/issues"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "link": "tsc && npm link"
   },
   "bin": {
     "db2": "./out/convertTo.js",
