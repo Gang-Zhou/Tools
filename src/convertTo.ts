@@ -81,7 +81,7 @@ function execute(): void {
             return textureAtlases;
         });
         if(type == "v45" && textureAtlasFiles == null){
-            console.log("not convert:", file)
+            console.log("Do not need convert:", file)
             continue
         }
         if (!dragonBonesData) {
@@ -184,9 +184,15 @@ function execute(): void {
                 const outputDirURL = dirURL.replace(input, output);
                 let outputURL = path.join(outputDirURL, fileName + ".json");
                 const result = JSON.stringify(dragonBonesData);
-                if( type == "v45" && outputDirURL == dirURL    //在相同目录输出添加45后缀避免覆盖
-                    && outputURL.match(/45.json$/i) == null){
-                    outputURL = outputURL.replace(/.json$/i, "45.json")
+                let repMap = {
+                    "v45":"45.json",
+                    "new":"55.json"
+                }
+                if(outputDirURL == dirURL ) { //在相同目录输出添加45后缀避免覆盖
+                    let n = repMap[type]
+                    if(n &&  outputURL.match(new RegExp(n + "$", "i")) == null){
+                        outputURL = outputURL.replace(/.json$/i, n)
+                    }
                 }
                 if (!fs.existsSync(outputDirURL)) {
                     fs.mkdirsSync(outputDirURL);
